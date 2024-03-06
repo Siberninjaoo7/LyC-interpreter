@@ -29,6 +29,8 @@ const (
 	RETURN
 	IF
 	ELSE
+	CORCHETEI
+	CORCEHTED
 )
 
 var TokenName = []string{
@@ -56,6 +58,9 @@ var TokenName = []string{
 	"RETURN",
 	"IF",
 	"ELSE",
+	"CORCHETEI",
+	"CORCEHTED",
+
 }
 
 func (t TokenType) String() string {

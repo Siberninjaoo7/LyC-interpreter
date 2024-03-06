@@ -71,3 +71,40 @@ func (l *Lexer) readNumber() string {
 	}
 	return l.source[initialPosition:l.currentPos]
 }
+func next_token(l Lexer, t Token) Token {
+
+	if l.currentChar == "=" {
+		t.tokenType = ASSIGN
+		t.Literal = "="
+	} else if l.currentChar == "+" {
+		t.tokenType = PLUS
+		t.Literal = "+"
+	} else if l.currentChar == "," {
+		t.tokenType = COMMA
+		t.Literal = ","
+	} else if l.currentChar == ";" {
+		t.tokenType = SEMICOLON
+		t.Literal = ";"
+	} else if l.currentChar == "" {
+		t.tokenType = EOF
+	} else if l.currentChar == "{" {
+		t.tokenType = CORCHETEI
+		t.Literal = "{"
+	} else if l.currentChar == "}" {
+		t.tokenType = CORCEHTED
+		t.Literal = "}"
+	} else if l.currentChar == "-" {
+		t.tokenType = MINUS
+		t.Literal = "-"
+	} else if l.currentChar == "/" {
+		t.tokenType = DIVISION
+		t.Literal = "/"
+	} else if l.currentChar == "*" {
+		t.tokenType = MULTI
+		t.Literal = "*"
+	} else {
+		t.tokenType = ILLEGAL
+	}
+	l.readCharacter()
+	return t
+}
