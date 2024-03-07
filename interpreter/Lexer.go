@@ -12,8 +12,8 @@ type Lexer struct {
 }
 
 // NewLexer crea una nueva instancia de Lexer.
-func newLexer(source string) *Lexer {
-	lexer := &Lexer{source: source}
+func newLexer(source string) Lexer {
+	lexer := Lexer{source: source}
 	lexer.readCharacter()
 	return lexer
 }

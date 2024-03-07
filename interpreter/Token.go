@@ -1,7 +1,5 @@
 package main
 
-//import "fmt"
-
 type TokenType int
 
 const (
@@ -60,7 +58,6 @@ var TokenName = []string{
 	"ELSE",
 	"CORCHETEI",
 	"CORCEHTED",
-
 }
 
 func (t TokenType) String() string {
