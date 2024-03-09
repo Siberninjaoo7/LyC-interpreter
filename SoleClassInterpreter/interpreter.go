@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"go/token"
 	"regexp"
 )
 
@@ -35,6 +34,7 @@ const (
 	ELSE
 	CORCHETEI
 	CORCEHTED
+	NULL
 )
 
 var TokenName = []string{
@@ -64,6 +64,7 @@ var TokenName = []string{
 	"ELSE",
 	"CORCHETEI",
 	"CORCEHTED",
+	"NULL",
 }
 
 func (t TokenType) String() string {
@@ -71,8 +72,8 @@ func (t TokenType) String() string {
 }
 
 type Token struct {
-	tokenType TokenType
-	Literal   string
+	tp      TokenType
+	Literal string
 }
 
 func lookUpTokenType(literal string) TokenType {
@@ -101,12 +102,12 @@ type Lexer struct {
 }
 
 // NewLexer crea una nueva instancia de Lexer.
-func newLexer(source string) *Lexer {
-	lexer := &Lexer{source: source}
+func newLexer(source string) Lexer {
+	lexer := Lexer{source: source}
 	lexer.readCharacter()
 	return lexer
 }
-func (l *Lexer) readCharacter() {
+func (l Lexer) readCharacter() {
 	if l.readCurrentPos >= len(l.source) {
 		l.currentChar = ""
 	} else {
@@ -117,33 +118,33 @@ func (l *Lexer) readCharacter() {
 }
 
 // skipWhitespace evita los espacios en blanco.
-func (l *Lexer) skipWhitespace() {
+func (l Lexer) skipWhitespace() {
 	for l.currentChar == " " || l.currentChar == "\t" || l.currentChar == "\n" || l.currentChar == "\r" {
 		l.readCharacter()
 	}
 }
 
 // peekCharacter lee el siguiente carácter sin avanzar el cursor.
-func (l *Lexer) peekCharacter() string {
+func (l Lexer) peekCharacter() string {
 	if l.readCurrentPos >= len(l.source) {
 		return ""
 	}
 	return string(l.source[l.readCurrentPos])
 }
 
-func (l *Lexer) isLetter(character string) bool {
+func (l Lexer) isLetter(character string) bool {
 	match, _ := regexp.MatchString(`^[a-zA-ZáéíóúÁÉÍÓÚñÑ_]$`, character)
 	return match
 }
 
 // isNumber evalúa si el carácter es un número.
-func (l *Lexer) isNumber(character string) bool {
+func (l Lexer) isNumber(character string) bool {
 	match, _ := regexp.MatchString(`^\d$`, character)
 	return match
 }
 
 // readIdentifier lee y devuelve identificadores.
-func (l *Lexer) readIdentifier() string {
+func (l Lexer) readIdentifier() string {
 	initialPosition := l.currentPos
 	isFirstLetter := true
 	for l.isLetter(l.currentChar) || (!isFirstLetter && l.isNumber(l.currentChar)) {
@@ -153,7 +154,7 @@ func (l *Lexer) readIdentifier() string {
 	return l.source[initialPosition:l.currentPos]
 }
 
-func (l *Lexer) readNumber() string {
+func (l Lexer) readNumber() string {
 	initialPosition := l.currentPos
 	for l.isNumber(l.currentChar) {
 		l.readCharacter()
@@ -165,63 +166,61 @@ func (l *Lexer) readNumber() string {
 func next_token(l Lexer, t Token) Token {
 
 	if l.currentChar == "=" {
-		t.tokenType = ASSIGN
+		t.tp = ASSIGN
 		t.Literal = "="
 	} else if l.currentChar == "+" {
-		t.tokenType = PLUS
+		t.tp = PLUS
 		t.Literal = "+"
 	} else if l.currentChar == "," {
-		t.tokenType = COMMA
+		t.tp = COMMA
 		t.Literal = ","
 	} else if l.currentChar == ";" {
-		t.tokenType = SEMICOLON
+		t.tp = SEMICOLON
 		t.Literal = ";"
 	} else if l.currentChar == "" {
-		t.tokenType = EOF
+		t.tp = EOF
 	} else if l.currentChar == "{" {
-		t.tokenType = CORCHETEI
+		t.tp = CORCHETEI
 		t.Literal = "{"
 	} else if l.currentChar == "}" {
-		t.tokenType = CORCEHTED
+		t.tp = CORCEHTED
 		t.Literal = "}"
 	} else if l.currentChar == "-" {
-		t.tokenType = MINUS
+		t.tp = MINUS
 		t.Literal = "-"
 	} else if l.currentChar == "/" {
-		t.tokenType = DIVISION
+		t.tp = DIVISION
 		t.Literal = "/"
 	} else if l.currentChar == "*" {
-		t.tokenType = MULTI
+		t.tp = MULTI
 		t.Literal = "*"
 	} else {
-		t.tokenType = ILLEGAL
+		t.tp = ILLEGAL
 	}
 	l.readCharacter()
 	return t
 }
 
-func startRepl(l Lexer, t Token) {
+func startRepl() {
 	fmt.Println("Bienvenido a nuestro lenguaje de programacion")
+	var firstInput string
+	fmt.Scanln(firstInput)
+	l := newLexer(firstInput)
+	t := Token{
+		tp:      NULL,
+		Literal: "",
+	}
 	for l.source != "end" {
-		for token.Token(next_token(l, t).tokenType) != token.EOF {
-			fmt.Print(t.Literal)
+		fmt.Scanln(l.source)
+		t := next_token(l, t)
+		for t.tp != EOF {
+			fmt.Println()
 		}
+
 	}
 }
 
 func main() {
 
-	var null string
-	l := Lexer{
-		source:         null,
-		currentPos:     0,
-		currentChar:    "",
-		readCurrentPos: 0,
-	}
-
-	t := Token{
-		tokenType: ILLEGAL,
-		Literal:   null,
-	}
-	startRepl(l, t)
+	startRepl()
 }
