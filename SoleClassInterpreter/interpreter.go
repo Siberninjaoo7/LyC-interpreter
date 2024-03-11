@@ -76,6 +76,16 @@ type Token struct {
 	Literal string
 }
 
+func newToken(t TokenType, lit string) Token {
+	tok := Token{
+		tp:      t,
+		Literal: lit,
+	}
+	return tok
+}
+func strToken(t *Token) string {
+	return t.Literal
+}
 func lookUpTokenType(literal string) TokenType {
 	keywords := map[string]TokenType{
 		"false":    FALSE,
@@ -102,12 +112,12 @@ type Lexer struct {
 }
 
 // NewLexer crea una nueva instancia de Lexer.
-func newLexer(source string) Lexer {
+func newLexer(source string) *Lexer {
 	lexer := Lexer{source: source}
 	lexer.readCharacter()
-	return lexer
+	return &lexer
 }
-func (l Lexer) readCharacter() {
+func (l *Lexer) readCharacter() {
 	if l.readCurrentPos >= len(l.source) {
 		l.currentChar = ""
 	} else {
@@ -118,33 +128,33 @@ func (l Lexer) readCharacter() {
 }
 
 // skipWhitespace evita los espacios en blanco.
-func (l Lexer) skipWhitespace() {
+func (l *Lexer) skipWhitespace() {
 	for l.currentChar == " " || l.currentChar == "\t" || l.currentChar == "\n" || l.currentChar == "\r" {
 		l.readCharacter()
 	}
 }
 
 // peekCharacter lee el siguiente carácter sin avanzar el cursor.
-func (l Lexer) peekCharacter() string {
+func (l *Lexer) peekCharacter() string {
 	if l.readCurrentPos >= len(l.source) {
 		return ""
 	}
 	return string(l.source[l.readCurrentPos])
 }
 
-func (l Lexer) isLetter(character string) bool {
+func (l *Lexer) isLetter(character string) bool {
 	match, _ := regexp.MatchString(`^[a-zA-ZáéíóúÁÉÍÓÚñÑ_]$`, character)
 	return match
 }
 
 // isNumber evalúa si el carácter es un número.
-func (l Lexer) isNumber(character string) bool {
+func (l *Lexer) isNumber(character string) bool {
 	match, _ := regexp.MatchString(`^\d$`, character)
 	return match
 }
 
 // readIdentifier lee y devuelve identificadores.
-func (l Lexer) readIdentifier() string {
+func (l *Lexer) readIdentifier() string {
 	initialPosition := l.currentPos
 	isFirstLetter := true
 	for l.isLetter(l.currentChar) || (!isFirstLetter && l.isNumber(l.currentChar)) {
@@ -154,7 +164,7 @@ func (l Lexer) readIdentifier() string {
 	return l.source[initialPosition:l.currentPos]
 }
 
-func (l Lexer) readNumber() string {
+func (l *Lexer) readNumber() string {
 	initialPosition := l.currentPos
 	for l.isNumber(l.currentChar) {
 		l.readCharacter()
@@ -163,64 +173,51 @@ func (l Lexer) readNumber() string {
 }
 
 // evalua el caracter para darle valor al token y su literal
-func next_token(l Lexer, t Token) Token {
+func next_token(l Lexer, t Token) {
 
 	if l.currentChar == "=" {
-		t.tp = ASSIGN
-		t.Literal = "="
+		fmt.Println("ASSIGN"+"=")
 	} else if l.currentChar == "+" {
-		t.tp = PLUS
-		t.Literal = "+"
+		t = newToken(PLUS, "+")
 	} else if l.currentChar == "," {
-		t.tp = COMMA
-		t.Literal = ","
+		t = newToken(COMMA,",")
 	} else if l.currentChar == ";" {
-		t.tp = SEMICOLON
-		t.Literal = ";"
+		t = newToken(SEMICOLON, ";")
 	} else if l.currentChar == "" {
-		t.tp = EOF
+		t = newToken(EOF,"EOF")
 	} else if l.currentChar == "{" {
-		t.tp = CORCHETEI
-		t.Literal = "{"
+		t = newToken(CORCHETEI, "{")
 	} else if l.currentChar == "}" {
-		t.tp = CORCEHTED
-		t.Literal = "}"
+		t = newToken(CORCEHTED, "}")
 	} else if l.currentChar == "-" {
-		t.tp = MINUS
-		t.Literal = "-"
+		t = newToken(MINUS,"-")
 	} else if l.currentChar == "/" {
-		t.tp = DIVISION
-		t.Literal = "/"
+		t = newToken(DIVISION, "/")
 	} else if l.currentChar == "*" {
-		t.tp = MULTI
-		t.Literal = "*"
+		t = newToken(MULTI, "*")
 	} else {
-		t.tp = ILLEGAL
+		t = newToken(ILLEGAL,"ILLEGAL")
 	}
 	l.readCharacter()
-	return t
+	fmt.Println(t.tp)
+	fmt.Println(t.Literal)
+	
 }
 
 func startRepl() {
-	fmt.Println("Bienvenido a nuestro lenguaje de programacion")
+	fmt.Println("Bienvenido a nuestro martitrio")
 	var firstInput string
 	fmt.Scanln(firstInput)
 	l := newLexer(firstInput)
-	t := Token{
-		tp:      NULL,
-		Literal: "",
-	}
+	t := newToken(NULL,"NULL") 
 	for l.source != "end" {
-		fmt.Scanln(l.source)
-		t := next_token(l, t)
-		for t.tp != EOF {
-			fmt.Println()
-		}
-
+		fmt.Printf(">>>")
+		fmt.Scanln(&l.source)
+		next_token(*l, t)
+		
 	}
 }
 
 func main() {
-
 	startRepl()
 }
