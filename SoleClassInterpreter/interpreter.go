@@ -173,35 +173,43 @@ func (l *Lexer) readNumber() string {
 }
 
 // evalua el caracter para darle valor al token y su literal
-func next_token(l Lexer, t Token) {
+func next_token(l Lexer, t *Token)  {
 
 	if l.currentChar == "=" {
-		fmt.Println("ASSIGN"+"=")
+		t.tp = ASSIGN
+		t.Literal = "="
 	} else if l.currentChar == "+" {
-		t = newToken(PLUS, "+")
+		t.tp = PLUS
+		t.Literal = "+"
 	} else if l.currentChar == "," {
-		t = newToken(COMMA,",")
+		t.tp = COMMA
+		t.Literal = ","
 	} else if l.currentChar == ";" {
-		t = newToken(SEMICOLON, ";")
+		t.tp = SEMICOLON
+		t.Literal =";"
 	} else if l.currentChar == "" {
-		t = newToken(EOF,"EOF")
+		t.tp = EOF
 	} else if l.currentChar == "{" {
-		t = newToken(CORCHETEI, "{")
+		t.tp = CORCHETEI
+		t.Literal = "{"
 	} else if l.currentChar == "}" {
-		t = newToken(CORCEHTED, "}")
+		t.tp = CORCEHTED
+		t.Literal = "}"
 	} else if l.currentChar == "-" {
-		t = newToken(MINUS,"-")
+		t.tp = MINUS
+		t.Literal = "-"
 	} else if l.currentChar == "/" {
-		t = newToken(DIVISION, "/")
+		t.tp = DIVISION
+		t.Literal = "/"
 	} else if l.currentChar == "*" {
-		t = newToken(MULTI, "*")
+		t.tp = MULTI
+		t.Literal = "*"
 	} else {
-		t = newToken(ILLEGAL,"ILLEGAL")
+		t.tp = ILLEGAL
+		
 	}
 	l.readCharacter()
-	fmt.Println(t.tp)
-	fmt.Println(t.Literal)
-	
+		
 }
 
 func startRepl() {
@@ -209,12 +217,15 @@ func startRepl() {
 	var firstInput string
 	fmt.Scanln(firstInput)
 	l := newLexer(firstInput)
-	t := newToken(NULL,"NULL") 
-	for l.source != "end" {
+	t := Token{}
+	for l.currentChar != "end" {
 		fmt.Printf(">>>")
-		fmt.Scanln(&l.source)
-		next_token(*l, t)
+		fmt.Scanln(&l.currentChar)
+		next_token(*l, &t)
+        fmt.Println(t.tp)
+		fmt.Println(t.Literal)
 		
+
 	}
 }
 
