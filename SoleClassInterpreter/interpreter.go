@@ -76,16 +76,6 @@ type Token struct {
 	Literal string
 }
 
-func newToken(t TokenType, lit string) Token {
-	tok := Token{
-		tp:      t,
-		Literal: lit,
-	}
-	return tok
-}
-func strToken(t *Token) string {
-	return t.Literal
-}
 func lookUpTokenType(literal string) TokenType {
 	keywords := map[string]TokenType{
 		"false":    FALSE,
@@ -113,9 +103,9 @@ type Lexer struct {
 
 // NewLexer crea una nueva instancia de Lexer.
 func newLexer(source string) *Lexer {
-	lexer := Lexer{source: source}
-	lexer.readCharacter()
-	return &lexer
+	mutlexer := &Lexer{source: source}
+	mutlexer.readCharacter()
+	return mutlexer
 }
 func (l *Lexer) readCharacter() {
 	if l.readCurrentPos >= len(l.source) {
@@ -142,6 +132,7 @@ func (l *Lexer) peekCharacter() string {
 	return string(l.source[l.readCurrentPos])
 }
 
+// evalua si es una letra
 func (l *Lexer) isLetter(character string) bool {
 	match, _ := regexp.MatchString(`^[a-zA-ZáéíóúÁÉÍÓÚñÑ_]$`, character)
 	return match
@@ -173,8 +164,9 @@ func (l *Lexer) readNumber() string {
 }
 
 // evalua el caracter para darle valor al token y su literal
-func next_token(l Lexer, t *Token)  {
+func next_token(l *Lexer, t *Token) {
 
+	l.skipWhitespace()
 	if l.currentChar == "=" {
 		t.tp = ASSIGN
 		t.Literal = "="
@@ -186,7 +178,7 @@ func next_token(l Lexer, t *Token)  {
 		t.Literal = ","
 	} else if l.currentChar == ";" {
 		t.tp = SEMICOLON
-		t.Literal =";"
+		t.Literal = ";"
 	} else if l.currentChar == "" {
 		t.tp = EOF
 	} else if l.currentChar == "{" {
@@ -206,29 +198,24 @@ func next_token(l Lexer, t *Token)  {
 		t.Literal = "*"
 	} else {
 		t.tp = ILLEGAL
-		
 	}
 	l.readCharacter()
-		
-}
 
+}
 func startRepl() {
 	fmt.Println("Bienvenido a nuestro martitrio")
 	var firstInput string
 	fmt.Scanln(firstInput)
-	l := newLexer(firstInput)
+	l := Lexer{}
 	t := Token{}
-	for l.currentChar != "end" {
+	for l.currentChar != "end"{
 		fmt.Printf(">>>")
 		fmt.Scanln(&l.currentChar)
-		next_token(*l, &t)
-        fmt.Println(t.tp)
+		next_token(&l, &t)
+		fmt.Println(t.tp)
 		fmt.Println(t.Literal)
-		
-
 	}
 }
-
 func main() {
 	startRepl()
 }
