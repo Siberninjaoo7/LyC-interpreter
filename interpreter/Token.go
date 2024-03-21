@@ -1,4 +1,4 @@
-package main
+package interpreter
 
 type TokenType int
 
@@ -29,6 +29,7 @@ const (
 	ELSE
 	CORCHETEI
 	CORCEHTED
+	NULL
 )
 
 var TokenName = []string{
@@ -58,6 +59,7 @@ var TokenName = []string{
 	"ELSE",
 	"CORCHETEI",
 	"CORCEHTED",
+	"NULL",
 }
 
 func (t TokenType) String() string {
@@ -65,8 +67,8 @@ func (t TokenType) String() string {
 }
 
 type Token struct {
-	tokenType TokenType
-	Literal   string
+	tp      TokenType
+	Literal string
 }
 
 func lookUpTokenType(literal string) TokenType {

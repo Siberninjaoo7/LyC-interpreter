@@ -1,4 +1,4 @@
-package main
+package interpreter
 
 import (
 	"regexp"
@@ -12,10 +12,10 @@ type Lexer struct {
 }
 
 // NewLexer crea una nueva instancia de Lexer.
-func newLexer(source string) Lexer {
-	lexer := Lexer{source: source}
-	lexer.readCharacter()
-	return lexer
+func newLexer(source string) *Lexer {
+	mutlexer := &Lexer{source: source}
+	mutlexer.readCharacter()
+	return mutlexer
 }
 func (l *Lexer) readCharacter() {
 	if l.readCurrentPos >= len(l.source) {
@@ -71,40 +71,41 @@ func (l *Lexer) readNumber() string {
 	}
 	return l.source[initialPosition:l.currentPos]
 }
-func next_token(l Lexer, t Token) Token {
+func next_token(l *Lexer, t *Token) {
 
+	l.skipWhitespace()
 	if l.currentChar == "=" {
-		t.tokenType = ASSIGN
+		t.tp = ASSIGN
 		t.Literal = "="
 	} else if l.currentChar == "+" {
-		t.tokenType = PLUS
+		t.tp = PLUS
 		t.Literal = "+"
 	} else if l.currentChar == "," {
-		t.tokenType = COMMA
+		t.tp = COMMA
 		t.Literal = ","
 	} else if l.currentChar == ";" {
-		t.tokenType = SEMICOLON
+		t.tp = SEMICOLON
 		t.Literal = ";"
 	} else if l.currentChar == "" {
-		t.tokenType = EOF
+		t.tp = EOF
 	} else if l.currentChar == "{" {
-		t.tokenType = CORCHETEI
+		t.tp = CORCHETEI
 		t.Literal = "{"
 	} else if l.currentChar == "}" {
-		t.tokenType = CORCEHTED
+		t.tp = CORCEHTED
 		t.Literal = "}"
 	} else if l.currentChar == "-" {
-		t.tokenType = MINUS
+		t.tp = MINUS
 		t.Literal = "-"
 	} else if l.currentChar == "/" {
-		t.tokenType = DIVISION
+		t.tp = DIVISION
 		t.Literal = "/"
 	} else if l.currentChar == "*" {
-		t.tokenType = MULTI
+		t.tp = MULTI
 		t.Literal = "*"
 	} else {
-		t.tokenType = ILLEGAL
+		t.tp = ILLEGAL
 	}
 	l.readCharacter()
-	return t
+
 }

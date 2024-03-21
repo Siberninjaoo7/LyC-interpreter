@@ -1,16 +1,20 @@
-package main
+package interpreter
 
 import "fmt"
 
-func start_repl() {
-	var inpt string
-	fmt.Println("Buenas mi estimado")
-	l := newLexer(inpt)
+func startRepl() {
+	fmt.Println("Bienvenido a nuestro martitrio")
+	var firstInput string
+	fmt.Scanln(firstInput)
+	l := Lexer{}
 	t := Token{}
-	for l.source != "end" {
-		for next_token(l, t).tokenType != EOF {
-			fmt.Println(next_token(l, t).Literal)
-		}
+	
+	for l.currentChar != "end"{
+		fmt.Printf(">>>")
+		fmt.Scanln(&l.currentChar)
+		next_token(&l, &t)
+		fmt.Println(t.tp)
+		fmt.Println(t.Literal)
 	}
-
 }
+
