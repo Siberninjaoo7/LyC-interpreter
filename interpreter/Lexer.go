@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"regexp"
+	"unicode/utf8"
 )
 
 type Lexer struct {
@@ -14,11 +15,11 @@ type Lexer struct {
 // NewLexer crea una nueva instancia de Lexer.
 func newLexer(source string) *Lexer {
 	mutlexer := &Lexer{source: source}
-	mutlexer.readCharacter()
+	mutlexer.ReadCharacter()
 	return mutlexer
 }
-func (l *Lexer) readCharacter() {
-	if l.readCurrentPos >= len(l.source) {
+func (l *Lexer) ReadCharacter() {
+	if l.readCurrentPos >= utf8.RuneCountInString(l.source) {
 		l.currentChar = ""
 	} else {
 		l.currentChar = string(l.source[l.readCurrentPos])
@@ -30,7 +31,7 @@ func (l *Lexer) readCharacter() {
 // skipWhitespace evita los espacios en blanco.
 func (l *Lexer) skipWhitespace() {
 	for l.currentChar == " " || l.currentChar == "\t" || l.currentChar == "\n" || l.currentChar == "\r" {
-		l.readCharacter()
+		l.ReadCharacter()
 	}
 }
 
@@ -42,36 +43,36 @@ func (l *Lexer) peekCharacter() string {
 	return string(l.source[l.readCurrentPos])
 }
 
-func (l *Lexer) isLetter(character string) bool {
+func (l *Lexer) IsLetter(character string) bool {
 	match, _ := regexp.MatchString(`^[a-zA-ZáéíóúÁÉÍÓÚñÑ_]$`, character)
 	return match
 }
 
 // isNumber evalúa si el carácter es un número.
-func (l *Lexer) isNumber(character string) bool {
+func (l *Lexer) IsNumber(character string) bool {
 	match, _ := regexp.MatchString(`^\d$`, character)
 	return match
 }
 
 // readIdentifier lee y devuelve identificadores.
-func (l *Lexer) readIdentifier() string {
+func (l *Lexer) ReadIdentifier() string {
 	initialPosition := l.currentPos
 	isFirstLetter := true
-	for l.isLetter(l.currentChar) || (!isFirstLetter && l.isNumber(l.currentChar)) {
-		l.readCharacter()
+	for l.IsLetter(l.currentChar) || (!isFirstLetter && l.IsNumber(l.currentChar)) {
+		l.ReadCharacter()
 		isFirstLetter = false
 	}
 	return l.source[initialPosition:l.currentPos]
 }
 
-func (l *Lexer) readNumber() string {
+func (l *Lexer) ReadNumber() string {
 	initialPosition := l.currentPos
-	for l.isNumber(l.currentChar) {
-		l.readCharacter()
+	for l.IsNumber(l.currentChar) {
+		l.ReadCharacter()
 	}
 	return l.source[initialPosition:l.currentPos]
 }
-func next_token(l *Lexer, t *Token) {
+func next_token(l Lexer, t Token) Token {
 
 	l.skipWhitespace()
 	if l.currentChar == "=" {
@@ -106,6 +107,6 @@ func next_token(l *Lexer, t *Token) {
 	} else {
 		t.tp = ILLEGAL
 	}
-	l.readCharacter()
-
+	l.ReadCharacter()
+ return t
 }

@@ -2,7 +2,7 @@ package interpreter
 
 import "fmt"
 
-func startRepl() {
+func StartRepl() {
 	fmt.Println("Bienvenido a nuestro martitrio")
 	var firstInput string
 	fmt.Scanln(firstInput)
@@ -12,7 +12,7 @@ func startRepl() {
 	for l.currentChar != "end"{
 		fmt.Printf(">>>")
 		fmt.Scanln(&l.currentChar)
-		next_token(&l, &t)
+		next_token(l, t)
 		fmt.Println(t.tp)
 		fmt.Println(t.Literal)
 	}
