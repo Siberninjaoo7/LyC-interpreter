@@ -1,4 +1,4 @@
-package interpreter
+package main
 
 import (
 	"regexp"
@@ -72,7 +72,7 @@ func (l *Lexer) ReadNumber() string {
 	}
 	return l.source[initialPosition:l.currentPos]
 }
-func next_token(l Lexer, t Token) Token {
+func next_token(l Lexer, t *Token) Token {
 
 	l.skipWhitespace()
 	if l.currentChar == "=" {
@@ -108,5 +108,5 @@ func next_token(l Lexer, t Token) Token {
 		t.tp = ILLEGAL
 	}
 	l.ReadCharacter()
- return t
+	return *t
 }

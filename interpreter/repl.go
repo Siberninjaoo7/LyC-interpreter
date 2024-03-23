@@ -1,4 +1,4 @@
-package interpreter
+package main
 
 import "fmt"
 
@@ -8,13 +8,12 @@ func StartRepl() {
 	fmt.Scanln(firstInput)
 	l := Lexer{}
 	t := Token{}
-	
-	for l.currentChar != "end"{
+
+	for l.currentChar != "end" {
 		fmt.Printf(">>>")
 		fmt.Scanln(&l.currentChar)
-		next_token(l, t)
+		next_token(l, &t)
 		fmt.Println(t.tp)
 		fmt.Println(t.Literal)
 	}
 }
-

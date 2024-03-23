@@ -1,4 +1,4 @@
-package interpreter
+package main
 
 type TokenType int
 
